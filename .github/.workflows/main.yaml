@@ -25,14 +25,19 @@ jobs:
             docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/backend:${{ github.sha }}
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/backend:${{ github.sha }}
 
-        - name: 'Deploy to Azure Container Instances'
-          uses: 'azure/aci-deploy@v1'
-          with:
-            resource-group: ${{ secrets.RESOURCE_GROUP }}
-            dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
-            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/backend:${{ github.sha }}
-            registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-            registry-username: ${{ secrets.REGISTRY_USERNAME }}
-            registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-            name: aci-uc-b11-one
-            location: 'east us'
+        - name: 'Deploy backend to Azure Container Instances'
+          run: |
+            az container create \
+              --resource-group ${{ secrets.RESOURCE_GROUP }} \
+              --name aci-uc-b11-two \
+              --image ${{ secrets.REGISTRY_LOGIN_SERVER }}/backend:${{ github.sha }} \
+              --cpu 1 --memory 2 \
+              --location east us \
+              --vnet ${{ secrets.VNET_NAME }} \
+              --subnet ${{ secrets.SUBNET_NAME }} \
+              --ports 80 \
+              --tags owner=Divya purpose=usecase Ticket ID=11222 Domain=Cloud&DevOps \
+              --registry-login-server ${{ secrets.REGISTRY_LOGIN_SERVER }} \
+              --registry-username ${{ secrets.REGISTRY_USERNAME }} \
+              --registry-password ${{ secrets.REGISTRY_PASSWORD }}
+              
