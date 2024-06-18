@@ -1,6 +1,6 @@
 on: 
     workflow_dispatch:
-name: build_deploy_workflow
+name: build_deploy_workflow_2
 
 jobs:
     build-and-deploy:
